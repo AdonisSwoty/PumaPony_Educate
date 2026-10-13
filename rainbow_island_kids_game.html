@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#8bd5ff" />
+<meta name="description" content="เกมการเรียนรู้สำหรับพี่และน้อง เล่นด้วยกัน ฝึกสังเกต สี ตัวเลข รูปทรง และการช่วยเหลือกัน" />
+<title>เกาะมหัศจรรย์ | เกมคู่หูพี่น้อง</title>
+<style>
+:root{
+ --ink:#33406e;--muted:#66739c;--sky:#d8f2ff;--blue:#5b79fa;--pink:#ff78b4;
+ --purple:#9275e7;--mint:#5dd6af;--yellow:#ffd15f;--shadow:0 15px 0 #dbe1f7,0 25px 42px rgba(82,89,155,.13);
+ --softshadow:0 14px 35px rgba(71,95,157,.13);--white:#fff;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;min-height:100vh;font-family:"Trebuchet MS","Noto Sans Thai",Tahoma,Arial,sans-serif;color:var(--ink);background:linear-gradient(180deg,#a7e2ff 0%,#dff4ff 39%,#f7f7ff 72%,#fff6f3 100%);overflow-x:hidden}
+button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+button:focus-visible{outline:4px solid #3458e6;outline-offset:4px}
+button:disabled{cursor:default;opacity:.5}
+button:active:not(:disabled){transform:translateY(3px) scale(.985)!important}
+#app{position:relative;min-height:100vh;isolation:isolate}
+.cloud-bg{position:fixed;z-index:-1;font-size:85px;opacity:.46;pointer-events:none;filter:drop-shadow(0 9px 10px #fff)}
+.cloud-bg.one{left:2%;top:22%;animation:drift 16s ease-in-out infinite}
+.cloud-bg.two{right:4%;top:12%;font-size:115px;animation:drift 19s ease-in-out infinite reverse}
+.cloud-bg.three{right:2%;bottom:6%;font-size:60px;opacity:.24}
+@keyframes drift{50%{transform:translateX(24px) translateY(-8px)}}
+.shell{max-width:1180px;margin:auto;padding:22px 26px 84px;position:relative}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:67px}
+.logo{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--ink);font-size:20px;font-weight:1000;letter-spacing:-.6px}
+.logo-icon{width:51px;height:51px;border-radius:18px;display:grid;place-items:center;background:#fff;box-shadow:0 6px 0 #d0dafa,0 14px 24px #668fc933;font-size:30px;transform:rotate(-6deg)}
+.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.tiny-pill{display:flex;gap:8px;align-items:center;justify-content:center;border:2px solid #fff;box-shadow:0 6px 14px rgba(74,112,151,.1);background:#ffffffb8;color:var(--ink);border-radius:99px;min-height:44px;padding:8px 15px;font-size:14px;font-weight:900}
+.tiny-pill .star{font-size:23px}.tiny-pill.toggle{background:#fff;transition:.2s}
+.hero{display:grid;grid-template-columns:1.03fr .97fr;align-items:center;gap:28px;min-height:430px;margin-top:20px}
+.hero-text{padding:20px 0 16px 6px;position:relative;z-index:2}
+.eyebrow{display:inline-flex;align-items:center;gap:9px;background:#fff;padding:11px 17px;border-radius:100px;box-shadow:0 5px 0 #cce8fb;color:#5876b7;font-size:14px;font-weight:900;letter-spacing:.2px}
+h1{font-size:clamp(43px,5vw,76px);line-height:1.14;letter-spacing:-2px;margin:22px 0 19px;font-weight:1000}
+h1 .rainbow{color:#f47b9d;text-shadow:2px 4px 0 #ffe0e6}
+.lead{font-size:clamp(17px,1.65vw,21px);line-height:1.9;color:#657295;font-weight:700;max-width:490px;margin-bottom:27px}
+.primary-btn,.secondary-btn{border:0;border-radius:23px;font-weight:1000;padding:17px 28px;font-size:18px;min-height:57px;display:inline-flex;align-items:center;justify-content:center;gap:12px;transition:transform .15s,filter .15s;text-decoration:none}
+.primary-btn{background:linear-gradient(135deg,#6d84fb,#8066ec);box-shadow:0 8px 0 #5560c2,0 18px 32px #7e86d747;color:#fff}
+.primary-btn:hover{filter:brightness(1.06);transform:translateY(-2px)}
+.secondary-btn{background:#fff;color:#5568a1;box-shadow:0 7px 0 #dbe4f4}
+.primary-btn.pink{background:linear-gradient(135deg,#ff8ebb,#ef69a1);box-shadow:0 8px 0 #c95b9e,0 18px 25px #ff85a13c}
+.hero-tags{display:flex;gap:10px;flex-wrap:wrap;margin-top:25px}
+.hero-tags span{font-size:13px;background:#ffffff90;border:1px solid #fff9;border-radius:10px;color:#6881a6;font-weight:900;padding:8px 10px}
+/* Hand-built 3D-like cartoon island, with no external graphics */
+.island-scene{position:relative;height:440px;width:100%;perspective:900px;transform-style:preserve-3d;filter:drop-shadow(0 21px 18px #6a9ec42f)}
+.sun{position:absolute;right:60px;top:22px;width:83px;height:83px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff7b7,#ffcb60 70%);box-shadow:0 0 0 15px #ffdd7b42,0 0 0 33px #ffdd7b24;animation:float 5s ease-in-out infinite}
+.island-cloud{position:absolute;font-size:58px;z-index:3;filter:drop-shadow(0 9px 4px #7299bd32)}
+.island-cloud.c1{left:25px;top:39px}.island-cloud.c2{right:6px;top:183px;font-size:68px}
+.flying-star{position:absolute;font-size:32px;animation:float 3s ease-in-out infinite;z-index:6;filter:drop-shadow(0 5px 0 #c49a44)}
+.flying-star.s1{left:14%;top:25%}.flying-star.s2{right:23%;top:13%;animation-delay:1.3s}.flying-star.s3{right:6%;top:67%;animation-delay:.6s}
+@keyframes float{50%{transform:translateY(-13px) rotate(4deg)}}
+.island-art{position:absolute;left:50%;top:56%;width:445px;height:365px;transform:translate(-50%,-50%) rotate(-2deg);transform-style:preserve-3d}
+.island-bottom{position:absolute;width:89%;height:146px;left:5%;top:57%;border-radius:50%;background:linear-gradient(180deg,#bc8b63 5%,#9f6a52 55%,#815742 100%);box-shadow:inset 0 -23px 0 #81573e,0 26px 35px #5985a336;transform:rotate(1deg)}
+.island-top{position:absolute;width:95%;height:150px;left:2.5%;top:48%;background:radial-gradient(ellipse at 43% 22%,#b8f387 0%,#81dca8 59%,#58c7a4 100%);border-radius:50%;box-shadow:inset 0 -18px 0 #50bd88,0 15px 0 #7eb26b;transform:rotate(-2deg)}
+.house{position:absolute;top:67px;left:35%;width:172px;height:182px;z-index:3;filter:drop-shadow(9px 10px 2px #489c7a44)}
+.house-body{position:absolute;left:13px;top:64px;width:145px;height:124px;border-radius:12px 12px 19px 19px;background:linear-gradient(120deg,#ffe9b8,#ffc88d);border:5px solid #f8bb7f;box-shadow:inset 10px 0 0 #fff4ce7d}
+.house-roof{position:absolute;top:12px;left:-5px;width:175px;height:105px;z-index:2;background:linear-gradient(160deg,#fc85ac,#f56f9f 70%,#d85887);clip-path:polygon(50% 0,100% 65%,93% 79%,50% 25%,8% 79%,0 65%);filter:drop-shadow(0 4px 0 #d75b85)}
+.house-door{position:absolute;bottom:0;left:55px;width:52px;height:72px;background:#9d78e1;border:5px solid #8a63c8;border-radius:28px 28px 2px 2px}
+.house-door:after{content:"";position:absolute;right:7px;top:36px;width:8px;height:8px;border-radius:50%;background:#ffe291}
+.house-window{position:absolute;left:16px;top:38px;width:32px;height:30px;border:5px solid #fff8da;border-radius:9px;background:#8fdffa;box-shadow:inset -5px -5px #63bde8}
+.island-tree{position:absolute;z-index:4;left:41px;top:117px;width:113px;height:150px}
+.tree-trunk{position:absolute;bottom:0;left:49px;background:#ab7857;width:22px;height:76px;border-radius:10px}
+.tree-leaves{position:absolute;top:0;left:1px;width:114px;height:112px;border-radius:55% 54% 47% 49%;background:radial-gradient(circle at 38% 31%,#c7f98a,#6ed8a0 69%,#40bc91);box-shadow:inset -11px -14px #48c191,0 8px 0 #4cb986;border:2px solid #79d99a}
+.tree-leaves:before,.tree-leaves:after{content:"";position:absolute;border-radius:50%;background:#ffba5d;width:15px;height:15px;box-shadow:inset -3px -2px #ef9961}
+.tree-leaves:before{top:39px;left:30px}.tree-leaves:after{top:65px;right:23px}
+.avatar-buddy{position:absolute;z-index:7;bottom:69px;display:grid;place-items:center;width:76px;height:77px;font-size:49px;background:linear-gradient(145deg,#ffffff,#e7e8ff);border:4px solid #fff;border-radius:29px 29px 24px 24px;box-shadow:0 9px 0 #adc5d6,0 20px 22px #467f8541;animation:bob 3.2s ease-in-out infinite}
+.avatar-buddy.big{left:115px;transform:rotate(-7deg)}.avatar-buddy.small{right:61px;bottom:76px;width:66px;height:68px;font-size:42px;animation-delay:.8s}
+@keyframes bob{50%{translate:0 -9px}}
+.avatar-buddy .name{position:absolute;bottom:-24px;left:0;right:0;text-align:center;white-space:nowrap;font-size:13px;font-weight:1000;color:#54836f}
+.island-flower{position:absolute;z-index:6;font-size:28px;bottom:92px;left:56px}.island-flower.f2{left:auto;right:22px;bottom:123px}
+.section-head{margin:34px 0 20px;text-align:center}
+.section-head h2{font-size:clamp(26px,3vw,38px);line-height:1.4;margin:5px 0;font-weight:1000;letter-spacing:-.7px}
+.section-head p{font-size:16px;margin:4px auto;color:#6d7c9f;font-weight:700}
+.game-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;margin-top:27px}
+.game-card{position:relative;text-align:left;width:100%;border:4px solid #fff;border-radius:31px;min-height:320px;padding:0 24px 26px;background:#fff;box-shadow:var(--shadow);overflow:hidden;color:var(--ink);transition:transform .2s,box-shadow .2s}
+.game-card:hover{transform:translateY(-8px);box-shadow:0 20px 0 #dbe1f7,0 29px 40px #6675aa31}
+.game-card .art{height:174px;display:flex;align-items:center;justify-content:center;margin:0 -24px 19px;position:relative;overflow:hidden}
+.game-card .art:before{content:"";position:absolute;border-radius:50%;background:#ffffff70;width:180px;height:180px;top:38px;left:calc(50% - 90px)}
+.game-card .art .main-icon{font-size:98px;position:relative;z-index:1;filter:drop-shadow(0 15px 1px #7c5c6c23);transition:transform .25s;line-height:1}
+.game-card:hover .main-icon{transform:scale(1.1) rotate(-6deg)}
+.art.garden{background:linear-gradient(160deg,#ccf8dc,#a5e7ff)}.art.animals{background:linear-gradient(160deg,#ffe7bd,#ffc4dd)}.art.shapes{background:linear-gradient(160deg,#d9d3ff,#b8dafa)}
+.card-label{font-size:12px;font-weight:1000;color:#6a78a0;letter-spacing:.3px}
+.game-card h3{font-size:25px;line-height:1.45;margin:6px 0 6px}.game-card p{font-size:14px;line-height:1.7;color:#7f89a2;margin:0;min-height:46px;font-weight:700}
+.card-play{display:inline-flex;align-items:center;gap:6px;color:#7066cd;font-weight:1000;font-size:15px;margin-top:18px}
+.section-foot{text-align:center;margin:38px auto;color:#7380a3;font-size:13px;line-height:1.8;font-weight:700}
+/* Game views */
+.back-btn{display:inline-flex;align-items:center;gap:8px;background:#fff;border:0;border-radius:16px;padding:12px 17px;font-weight:1000;color:#6574a5;box-shadow:0 5px 0 #d4ddf0;font-size:15px;min-height:47px}
+.game-top{display:flex;gap:14px;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-top:22px}
+.game-title-box{text-align:center;margin:17px 0 19px}
+.game-title-box .title-emoji{font-size:35px;vertical-align:middle;margin-right:6px}
+.game-title-box h1{font-size:clamp(28px,4vw,45px);margin:0;letter-spacing:-.7px;display:inline-block;vertical-align:middle}
+.game-title-box p{font-size:15px;font-weight:700;color:#7180a2;margin:8px 0}
+.progress-row{display:flex;justify-content:center;gap:9px;margin-bottom:24px}
+.progress-dot{width:60px;height:13px;background:#ffffffbb;border-radius:30px;border:2px solid #fff;box-shadow:0 3px 0 #d0def1}
+.progress-dot.done{background:#62d6ac}.progress-dot.now{background:#ffd766}
+.play-panel{display:grid;grid-template-columns:minmax(220px,.9fr) minmax(350px,1.1fr);gap:24px;align-items:stretch}
+.play-world,.play-actions{border:4px solid #fff;border-radius:35px;box-shadow:var(--softshadow);min-height:410px}
+.play-world{overflow:hidden;position:relative;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:25px;background:linear-gradient(160deg,#d5f4e9,#c4e1ff)}
+.play-world:before{content:"";position:absolute;width:320px;height:130px;background:#89dab4;bottom:-65px;border-radius:50%;box-shadow:0 -8px 0 #c2edc4,inset 0 -15px #55bd9c}
+.play-world.animals{background:linear-gradient(160deg,#fbe2c7,#ffe8e6)}.play-world.animals:before{background:#e2c79c;box-shadow:0 -8px 0 #f5dcae}
+.play-world.shapes{background:linear-gradient(160deg,#ded6ff,#c8eafc)}.play-world.shapes:before{background:#bdb2f4;box-shadow:0 -8px 0 #d6bafd}
+.scene-heading{z-index:1;font-size:17px;font-weight:1000;color:#607ba3;background:#fff9;padding:9px 15px;border-radius:20px}
+.scene-display{display:flex;justify-content:center;align-items:center;gap:12px;flex-wrap:wrap;position:relative;z-index:1;min-height:225px;width:100%}
+.scene-display .scene-emoji{font-size:clamp(65px,8vw,104px);filter:drop-shadow(0 13px 1px #708a9d24)}
+.scene-display .scene-extra{font-size:46px}
+.scene-result{position:relative;z-index:1;background:#ffffffcf;border-radius:15px;padding:9px 17px;color:#647398;font-size:14px;font-weight:900}
+.garden-bed{display:flex;flex-direction:column;align-items:center;justify-content:end;height:148px;min-width:72px;gap:3px}
+.garden-bed .flower{font-size:61px;line-height:1;filter:drop-shadow(0 10px 0 #1f8b6226)}
+.garden-bed .pot{font-size:52px;line-height:1}
+.garden-bed.empty .flower{filter:grayscale(1);opacity:.28}
+.animal-line{display:flex;align-items:center;gap:14px}.animal-line .friend{font-size:97px}.animal-line .food{font-size:65px}
+.shape-stack{display:flex;justify-content:center;align-items:end;gap:8px;min-height:180px}
+.shape-block{display:grid;place-items:center;width:70px;height:62px;border-radius:16px;font-size:43px;background:linear-gradient(150deg,#fff7bd,#ffcf94);border:3px solid #fff;box-shadow:0 9px 0 #d0a7a4,0 14px 17px #687daa36;transform:rotate(-4deg)}
+.shape-block:nth-child(even){background:linear-gradient(150deg,#c8f2ff,#9ad2ff);transform:rotate(5deg)}
+.shape-block.locked{opacity:.3;filter:grayscale(1)}
+.play-actions{background:#fff;padding:27px;display:flex;flex-direction:column}
+.turn-tag{align-self:flex-start;border-radius:13px;padding:10px 14px;font-size:15px;font-weight:1000;background:#ffedf5;color:#d45a98}
+.turn-tag.older{background:#e9ecff;color:#666fc1}.turn-tag.success{background:#dff9ec;color:#3baf7c}
+.action-title{font-size:clamp(24px,3vw,32px);font-weight:1000;line-height:1.48;margin:18px 0 6px}
+.action-sub{color:#7b86a1;font-size:15px;line-height:1.8;font-weight:700;margin:0 0 19px}
+.choice-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;margin:5px 0 15px}
+.choice-grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.choice{min-height:106px;border-radius:23px;border:3px solid #e6eafb;background:linear-gradient(145deg,#fff,#f7f9ff);box-shadow:0 6px 0 #dce2f4;font-size:45px;color:#4c5a89;display:flex;justify-content:center;align-items:center;flex-direction:column;gap:7px;transition:transform .15s,border-color .15s;line-height:1.1}
+.choice:hover{border-color:#a8aeff;transform:translateY(-3px)}
+.choice span.choice-label{font-size:14px;font-weight:1000;color:#606c94}
+.choice .water-drop{font-size:21px;letter-spacing:2px}
+.choice .color-circle{width:52px;height:52px;border-radius:50%;box-shadow:inset -8px -9px #00000015,0 5px 0 #e6eafb;border:4px solid #fff}
+.pattern{display:flex;gap:7px;justify-content:flex-start;align-items:center;flex-wrap:wrap;margin:4px 0 17px}
+.pattern .symbol{font-size:29px;background:#f3f4ff;width:45px;height:48px;display:grid;place-items:center;border-radius:12px}
+.pattern .question{background:#e5dfff;color:#7862c1;font-weight:1000}
+.feedback{border-radius:13px;font-weight:1000;font-size:14px;color:#cb8741;background:#fff4df;padding:11px 13px;margin:5px 0 13px}
+.action-bottom{margin-top:auto;display:flex;gap:9px;align-items:center;flex-wrap:wrap;justify-content:space-between;padding-top:12px}
+.role-note{font-size:13px;line-height:1.6;color:#97a0ba;font-weight:900}
+.sound-cue{background:#eef4ff;color:#6a79ac;border:0;border-radius:14px;min-height:43px;padding:9px 13px;font-size:13px;font-weight:900}
+.win-art{font-size:99px;margin:5px auto 18px;filter:drop-shadow(0 16px 0 #83a49725);animation:float 2.5s ease-in-out infinite}
+.win-sparks{display:flex;justify-content:center;gap:18px;font-size:38px;margin:15px auto 23px}
+.win-stars{display:inline-block;font-size:20px;color:#d18d36;background:#fff8d8;padding:11px 17px;border-radius:18px;font-weight:1000;margin:12px auto 21px}
+.win-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:14px;margin-top:14px}
+.done-screen{text-align:center;max-width:720px;margin:25px auto 0;background:#ffffffd9;border:4px solid #fff;border-radius:37px;padding:42px 35px 49px;box-shadow:var(--shadow)}
+.done-screen h2{font-size:clamp(32px,5vw,48px);margin:6px 0 10px}.done-screen p{font-size:18px;line-height:1.8;color:#6e7a99;font-weight:700}
+.success-slab{background:linear-gradient(140deg,#f3fcf0,#eef4ff);border:3px solid #fff;border-radius:22px;text-align:center;padding:18px 15px;margin-top:11px}
+.success-slab .big{font-size:67px;display:block;line-height:1.35}
+.success-slab strong{display:block;font-size:18px;margin-top:7px}.success-slab p{margin:7px 0 0;color:#7383a2;font-size:14px;line-height:1.6;font-weight:700}
+.footer-note{color:#8c98af;text-align:center;font-size:13px;font-weight:700;line-height:1.7;padding-top:31px}
+@media(max-width:900px){.hero{grid-template-columns:1fr 1fr;gap:0}.island-scene{transform:scale(.82);transform-origin:center}.game-grid{gap:14px}.game-card{padding:0 16px 23px;min-height:315px}.game-card .art{margin:0 -16px 18px}.game-card h3{font-size:20px}.play-panel{grid-template-columns:.83fr 1.17fr;gap:14px}.play-actions{padding:21px}.choice{min-height:90px}}
+@media(max-width:720px){.shell{padding:15px 15px 62px}.logo{font-size:15px;gap:7px}.logo-icon{width:42px;height:42px;font-size:24px;border-radius:13px}.tiny-pill{min-height:41px;padding:7px 10px;font-size:12px}.tiny-pill .star{font-size:18px}.hero{grid-template-columns:1fr;min-height:unset;margin-top:12px;gap:0}.hero-text{text-align:center;padding:12px 0 0}.hero-text .lead{margin:15px auto 22px}.hero-tags{justify-content:center;margin-top:24px}h1{font-size:clamp(40px,10vw,55px);letter-spacing:-1px;margin:20px 0 12px}.island-scene{height:320px;transform:scale(.83);margin-top:-30px;margin-bottom:-28px}.island-art{top:50%}.sun{top:-10px}.section-head{margin:17px 0}.game-grid{grid-template-columns:1fr;gap:18px;margin-top:20px}.game-card{min-height:unset;padding:0 23px 20px}.game-card .art{height:145px;margin:0 -23px 13px}.game-card .art .main-icon{font-size:78px}.game-card p{min-height:unset}.game-card h3{font-size:23px}.card-play{margin-top:9px}.play-panel{grid-template-columns:1fr}.play-world{min-height:225px;padding:14px}.scene-display{min-height:125px}.scene-display .scene-emoji{font-size:65px}.garden-bed{height:110px}.garden-bed .flower{font-size:44px}.garden-bed .pot{font-size:41px}.play-actions{padding:20px;min-height:360px}.choice{min-height:91px;font-size:41px}.game-title-box{margin:19px 0 15px}.game-title-box h1{font-size:27px}.game-title-box .title-emoji{font-size:28px}.game-top{margin-top:12px}.progress-row{margin-bottom:15px}.action-title{font-size:25px;margin:12px 0 5px}.done-screen{padding:28px 18px 37px}.shape-stack{min-height:114px}.shape-block{width:60px;height:57px}.win-art{font-size:78px}}
+@media(max-width:365px){.toolbar{gap:5px}.tiny-pill{padding:7px;font-size:11px}.logo span:last-child{max-width:100px}.choice-grid{gap:8px}.choice{min-height:82px}.island-scene{transform:scale(.7);margin-top:-40px;margin-bottom:-45px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<div id="app"><div class="cloud-bg one" aria-hidden="true">☁️</div><div class="cloud-bg two" aria-hidden="true">☁️</div><div class="cloud-bg three" aria-hidden="true">☁️</div><main id="screen"></main></div>
+<script>
+(()=>{
+'use strict';
+const title='เกาะมหัศจรรย์';
+const gameMeta={
+ garden:{icon:'🌻',name:'สวนสีสายรุ้ง',tag:'สี + นับเลข',desc:'น้องเลือกสี พี่ช่วยนับหยดน้ำ ร่วมกันปลูกดอกไม้ให้เต็มสวน',art:'garden'},
+ animals:{icon:'🐰',name:'เพื่อนสัตว์หิวแล้ว',tag:'สังเกต + ความรู้รอบตัว',desc:'น้องหาสัตว์ พี่เลือกอาหารที่เหมาะสม แล้วช่วยกันดูแลเพื่อน ๆ',art:'animals'},
+ shapes:{icon:'🏰',name:'ปราสาทรูปทรง',tag:'รูปทรง + ลำดับแบบรูป',desc:'น้องค้นหารูปทรง พี่ต่อแบบรูป ร่วมกันสร้างปราสาทวิเศษ',art:'shapes'}
+};
+const rounds={
+ garden:[
+  {color:'เหลือง',hex:'#ffd461',flower:'🌻',amount:2},
+  {color:'ชมพู',hex:'#ff94bd',flower:'🌷',amount:3},
+  {color:'ฟ้า',hex:'#64baf5',flower:'🪻',amount:4}
+ ],
+ animals:[
+  {animal:'🐰',name:'กระต่าย',food:'🥕',foodName:'แครอต'},
+  {animal:'🐵',name:'ลิง',food:'🍌',foodName:'กล้วย'},
+  {animal:'🐿️',name:'กระรอก',food:'🌰',foodName:'ลูกถั่ว'}
+ ],
+ shapes:[
+  {shape:'🔺',name:'สามเหลี่ยม',pattern:['🔺','🟦','🔺','🟦'],answer:'🔺'},
+  {shape:'⭐',name:'ดาว',pattern:['⭐','🟢','⭐','🟢'],answer:'⭐'},
+  {shape:'🟦',name:'สี่เหลี่ยม',pattern:['🟦','🔺','🔺','🟦','🔺','🔺'],answer:'🟦'}
+ ]
+};
+const gardenColors=[{name:'เหลือง',hex:'#ffd461'},{name:'ชมพู',hex:'#ff94bd'},{name:'ฟ้า',hex:'#64baf5'},{name:'เขียว',hex:'#71d8a9'}];
+const foods=[{icon:'🥕',name:'แครอต'},{icon:'🍌',name:'กล้วย'},{icon:'🌰',name:'ลูกถั่ว'}];
+const animals=['🐰','🐵','🐿️'];const shapes=['🔺','🟦','⭐','🟢'];
+const readStars=()=>{try{let n=Number(localStorage.getItem('rainbow_island_stars'));return Number.isFinite(n)&&n>=0?Math.min(n,9999):0}catch(e){return 0}};
+let stars=readStars();let state={screen:'home',game:null,step:0,phase:'little',feedback:'',speech:false};
+let screen=document.getElementById('screen');
+const safeStore=()=>{try{localStorage.setItem('rainbow_island_stars',String(stars))}catch(e){}};
+const rootBar=()=>`<header class="topbar"><div class="logo"><div class="logo-icon" aria-hidden="true">🌈</div><span>เกาะมหัศจรรย์</span></div><div class="toolbar"><div class="tiny-pill" aria-label="ดาวที่สะสมได้"><span class="star">⭐</span><span>${stars} ดาว</span></div><button type="button" class="tiny-pill toggle" data-action="speech">${state.speech?'🔊 เปิดเสียง':'🔈 ปิดเสียง'}</button></div></header>`;
+function island(){return `<div class="island-scene" role="img" aria-label="เกาะการ์ตูนสามมิติ มีบ้านสีชมพู ต้นไม้ พี่จิ้งจอกและน้องกระต่าย"><div class="sun"></div><div class="island-cloud c1">☁️</div><div class="island-cloud c2">☁️</div><div class="flying-star s1">⭐</div><div class="flying-star s2">✨</div><div class="flying-star s3">⭐</div><div class="island-art"><div class="island-bottom"></div><div class="island-top"></div><div class="island-tree"><div class="tree-trunk"></div><div class="tree-leaves"></div></div><div class="house"><div class="house-body"><div class="house-door"></div><div class="house-window"></div></div><div class="house-roof"></div></div><div class="avatar-buddy big">🦊<span class="name">พี่เมฆ</span></div><div class="avatar-buddy small">🐰<span class="name">น้องดาว</span></div><span class="island-flower">🌼</span><span class="island-flower f2">🌷</span></div></div>`}
+function home(){return `<div class="shell">${rootBar()}<section class="hero"><div class="hero-text"><div class="eyebrow">✨ เล่นด้วยกัน • เรียนรู้ไปด้วยกัน</div><h1>สนุกสองคน<br/><span class="rainbow">บนเกาะมหัศจรรย์!</span></h1><p class="lead">พี่เมฆ 🦊 กับน้องดาว 🐰 ชวนสองพี่น้องออกผจญภัย ฝึกสังเกต คิดเลข และช่วยเหลือกันโดยไม่ต้องแข่งกับใคร</p><button class="primary-btn" data-action="scroll">🎮 เลือกเกมกันเลย <span aria-hidden="true">➜</span></button><div class="hero-tags"><span>👶 น้อง 3–5 ปี</span><span>🧒 พี่ 7–8 ปี</span><span>🤝 เล่นร่วมกัน</span><span>⏳ ไม่มีจับเวลา</span></div></div>${island()}</section><section id="games"><div class="section-head"><div class="eyebrow">🗺️ แผนที่ผจญภัย</div><h2>วันนี้อยากเล่นเกมไหน?</h2><p>เลือกเกมที่ชอบ แล้วช่วยกันทำภารกิจ 3 ด่าน</p></div><div class="game-grid">${Object.entries(gameMeta).map(([id,g])=>`<button type="button" class="game-card" data-action="start" data-game="${id}"><div class="art ${g.art}"><span class="main-icon">${g.icon}</span></div><div class="card-label">${g.tag}</div><h3>${g.name}</h3><p>${g.desc}</p><span class="card-play">เริ่มผจญภัย →</span></button>`).join('')}</div></section><div class="section-foot">💛 เล่นแบบผลัดกันทำภารกิจ ปุ่มใหญ่เหมาะกับแท็บเล็ต · ไม่มีโฆษณา ไม่มีการเก็บข้อมูลส่วนตัว</div></div>`}
+const getRound=()=>rounds[state.game][state.step];
+const pipRow=()=>`<div class="progress-row" role="progressbar" aria-label="ความคืบหน้า" aria-valuemin="0" aria-valuemax="3" aria-valuenow="${state.step}">${[0,1,2].map(i=>`<span class="progress-dot ${i<state.step?'done':i===state.step?'now':''}"></span>`).join('')}</div>`;
+function world(){let game=state.game,r=getRound();let display='';let subtitle='';
+ if(game==='garden'){
+  subtitle='🌱 สวนดอกไม้ของสองพี่น้อง';
+  display=`<div class="scene-display">${rounds.garden.map((x,i)=>`<div class="garden-bed ${i>state.step || (i===state.step && state.phase!=='success')?'empty':''}"><span class="flower">${x.flower}</span><span class="pot">🪴</span></div>`).join('')}</div>`;
+ }else if(game==='animals'){
+  subtitle='🏡 บ้านเพื่อนสัตว์';
+  display=`<div class="scene-display"><div class="animal-line"><span class="friend">${r.animal}</span>${state.phase==='success'?`<span class="food">${r.food}</span>`:'<span class="scene-extra">💗</span>'}</div></div>`;
+ }else{
+  subtitle='☁️ ปราสาทเหนือเมฆ';
+  display=`<div class="scene-display"><div class="shape-stack">${rounds.shapes.map((x,i)=>`<span class="shape-block ${i>state.step || (i===state.step && state.phase!=='success')?'locked':''}">${x.shape}</span>`).join('')}</div></div>`;
+ }
+ return `<div class="play-world ${game}"><span class="scene-heading">${subtitle}</span>${display}<div class="scene-result">${state.step} / 3 ภารกิจสำเร็จ ${state.phase==='success'?' · อีก 1 ก้าวเก่งมาก!':''}</div></div>`;
+}
+function choice(value,visual,label,extra=''){return `<button type="button" class="choice" data-action="choice" data-value="${encodeURIComponent(value)}" aria-label="${label}">${visual}${extra?`<span class="choice-label">${extra}</span>`:''}</button>`;}
+function options(){let game=state.game,r=getRound(),phase=state.phase;
+ if(game==='garden'){
+  if(phase==='little') return `<div class="choice-grid">${gardenColors.map(c=>choice(c.name,`<span class="color-circle" style="background:${c.hex}"></span>`,`${c.name}`,c.name)).join('')}</div>`;
+  return `<div class="choice-grid">${[1,2,3,4].map(n=>choice(String(n),`<span class="water-drop">${'💧'.repeat(n)}</span>`,`${n} หยด`,`${n} หยด`)).join('')}</div>`;
+ }
+ if(game==='animals'){
+  if(phase==='little')return `<div class="choice-grid three">${animals.map(a=>choice(a,a,'เลือกสัตว์ '+a)).join('')}</div>`;
+  return `<div class="choice-grid three">${foods.map(f=>choice(f.icon,f.icon,f.name,f.name)).join('')}</div>`;
+ }
+ if(phase==='little')return `<div class="choice-grid three">${shapes.slice(0,3).map(s=>choice(s,s,`รูป ${s}`)).join('')}</div>`;
+ let current=[...new Set([r.answer,...(r.pattern.includes('🔺')?['🟦','⭐']:['🔺','🟢'])])].slice(0,3);
+ return `<div class="pattern" aria-label="ลำดับรูปทรง">${r.pattern.map(s=>`<span class="symbol">${s}</span>`).join('')}<span class="symbol question">?</span></div><div class="choice-grid three">${current.map(s=>choice(s,s,`รูป ${s}`)).join('')}</div>`;
+}
+function instruction(){let r=getRound(),game=state.game,phase=state.phase;
+ if(phase==='success')return {tag:'🎉 พี่น้องเก่งมาก!',title:game==='garden'?'ดอกไม้งอกแล้ว!':game==='animals'?'เพื่อนสัตว์อิ่มท้องแล้ว!':'ปราสาทสูงขึ้นแล้ว!',sub:'ทำได้เพราะช่วยกันคนละอย่าง เก่งทั้งคู่เลย!',speak:'เยี่ยมเลย! สองพี่น้องทำสำเร็จแล้ว'};
+ if(game==='garden')return phase==='little'?{tag:'🐰 ตาของน้องดาว',title:`เลือกดอกไม้สี${r.color}`,sub:'แตะวงกลมสีให้ตรงกับคำใบ้',speak:`น้องดาว เลือกดอกไม้สี${r.color}`}:{tag:'🦊 ตาของพี่เมฆ',title:`เลือกน้ำ ${r.amount} หยด`,sub:'มาช่วยกันนับหยดน้ำ เพื่อรดดอกไม้ให้โต',speak:`พี่เมฆ เลือกน้ำ ${r.amount} หยด`};
+ if(game==='animals')return phase==='little'?{tag:'🐰 ตาของน้องดาว',title:`หา${r.name}ให้เจอ`,sub:`ดูรูปสัตว์แล้วแตะตัว${r.name}ให้ถูกนะ`,speak:`น้องดาว หาสัตว์ ${r.name}`}:{tag:'🦊 ตาของพี่เมฆ',title:`${r.name}ชอบกินอะไร?`,sub:'เลือกอาหารให้ตรงกับเพื่อนสัตว์',speak:`พี่เมฆ เลือกอาหารให้${r.name}`};
+ return phase==='little'?{tag:'🐰 ตาของน้องดาว',title:`หารูป${r.name}ให้เจอ`,sub:'สังเกตรูปทรง แล้วแตะรูปที่ตรงกัน',speak:`น้องดาว หารูป${r.name}`}:{tag:'🦊 ตาของพี่เมฆ',title:'รูปต่อไปคืออะไร?',sub:'ดูแบบรูปแล้วคิดว่ารูปไหนควรมาเป็นรูปต่อไป',speak:'พี่เมฆ ดูแบบรูป แล้วเลือกรูปต่อไป'};
+}
+function stage(){const game=gameMeta[state.game];const i=instruction();return `<div class="shell">${rootBar()}<div class="game-top"><button class="back-btn" data-action="home">← กลับเกาะ</button><div class="tiny-pill">ด่าน ${state.step+1} / 3</div></div><div class="game-title-box"><span class="title-emoji">${game.icon}</span><h1>${game.name}</h1><p>เกมสำหรับสองพี่น้อง ผลัดกันเล่นคนละตา</p></div>${pipRow()}<div class="play-panel">${world()}<div class="play-actions"><div class="turn-tag ${state.phase==='older'?'older':state.phase==='success'?'success':''}">${i.tag}</div><h2 class="action-title">${i.title}</h2><p class="action-sub">${i.sub}</p>${state.phase==='success'?`<div class="success-slab"><span class="big">${state.game==='garden'?getRound().flower:state.game==='animals'?`${getRound().animal} ${getRound().food}`:'🏰'}</span><strong>รับดาวเพิ่ม ⭐⭐</strong><p>ไม่มีผู้แพ้! พี่น้องช่วยกันเก่งมาก</p></div><div class="action-bottom"><button class="primary-btn" data-action="next">${state.step===2?'🎊 ดูรางวัล':'ไปด่านต่อไป →'}</button></div>`:`${options()}${state.feedback?`<div class="feedback" role="status">💛 ${state.feedback}</div>`:''}<div class="action-bottom"><div class="role-note">${state.phase==='little'?'🦊 พี่ช่วยอ่านคำใบ้ให้น้องได้':'🐰 น้องช่วยเชียร์พี่ได้เลย'}</div><button class="sound-cue" data-action="listen" aria-label="ฟังคำใบ้">🔊 ฟังคำใบ้</button></div>`}</div></div><div class="footer-note">🌟 เลือกผิดก็ลองใหม่ได้เสมอ · ไม่มีเวลาจำกัด · เล่นด้วยกันบนเครื่องเดียว</div></div>`}
+function done(){let g=gameMeta[state.game];return `<div class="shell">${rootBar()}<div class="done-screen"><div class="win-sparks">✨ 🌈 ✨</div><div class="win-art">🏆</div><h2>สองพี่น้องสุดยอด!</h2><p>ทำครบ 3 ภารกิจในเกม <strong>${g.name}</strong><br/>เก่งมากที่แบ่งหน้าที่และช่วยเหลือกัน!</p><div class="win-stars">🌟 รับรางวัล 6 ดาวด้วยกัน</div><div class="win-actions"><button class="primary-btn" data-action="home">🏝️ กลับเกาะ</button><button class="secondary-btn" data-action="replay">🔁 เล่นอีกครั้ง</button></div></div><div class="footer-note">ชวนพี่น้องคุยกันว่า วันนี้ใครได้ช่วยอะไรเพื่อนบ้าง 💛</div></div>`}
+function render(){screen.innerHTML=state.screen==='home'?home():state.screen==='done'?done():stage()}
+function start(game){if(!gameMeta[game])return;state={...state,screen:'game',game,step:0,phase:'little',feedback:''};render();window.scrollTo({top:0,behavior:'instant'});if(state.speech)speak(instruction().speak)}
+function speak(text){if(!('speechSynthesis' in window))return;try{window.speechSynthesis.cancel();const utterance=new SpeechSynthesisUtterance(text);utterance.lang='th-TH';utterance.rate=.83;utterance.pitch=1.13;window.speechSynthesis.speak(utterance)}catch(e){}}
+function select(value){if(state.screen!=='game'||state.phase==='success')return;
+ const r=getRound();let good=false;
+ if(state.game==='garden')good=state.phase==='little'?value===r.color:value===String(r.amount);
+ else if(state.game==='animals')good=state.phase==='little'?value===r.animal:value===r.food;
+ else good=state.phase==='little'?value===r.shape:value===r.answer;
+ if(!good){state.feedback='ใกล้แล้ว ลองสังเกตอีกทีนะ 😊';render();return}
+ state.feedback='';
+ if(state.phase==='little'){state.phase='older';render();if(state.speech)speak(instruction().speak)}
+ else {state.phase='success';stars+=2;safeStore();render();if(state.speech)speak(instruction().speak)}
+}
+function next(){if(state.screen!=='game'||state.phase!=='success')return;if(state.step===2){state.screen='done';render();if(state.speech)speak('เยี่ยมมาก ทำครบสามภารกิจแล้ว')}else{state.step++;state.phase='little';state.feedback='';render();if(state.speech)speak(instruction().speak)}}
+function goHome(){state.screen='home';state.feedback='';render();window.scrollTo({top:0,behavior:'instant'})}
+screen.addEventListener('click',e=>{const btn=e.target.closest('[data-action]');if(!btn)return;const act=btn.dataset.action;
+ if(act==='scroll')document.getElementById('games')?.scrollIntoView({behavior:'smooth',block:'start'});
+ if(act==='start')start(btn.dataset.game);
+ if(act==='home')goHome();
+ if(act==='choice')select(decodeURIComponent(btn.dataset.value||''));
+ if(act==='next')next();
+ if(act==='replay')start(state.game);
+ if(act==='speech'){state.speech=!state.speech;if(!state.speech&&'speechSynthesis'in window)window.speechSynthesis.cancel();render();if(state.speech&&state.screen==='game')speak(instruction().speak)}
+ if(act==='listen'){if('speechSynthesis'in window)speak(instruction().speak);else{state.feedback='อุปกรณ์นี้ยังไม่รองรับเสียงอ่านภาษาไทย';render()}}
+});
+render();
+})();
+</script>
+</body>
+</html>
